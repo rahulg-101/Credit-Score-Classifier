@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.templates.default = "plotly_white"
 
 data = pd.read_csv("train.csv")
 print(data.head())
@@ -31,25 +35,9 @@ for i in range(6,len(ml)-1):
     
     if (type(data.iloc[2,i]) != np.float64) and ml[i] != ('Type_of_Loan' or 'Payment_of_Min_Amount'):
 
-        Unique = data[ml[i]].unique()
-        data[ml[i]] = data[ml[i]].map(dict([Unique[i],i+1] for i in range(len(Unique))))
-        
-        A = data[ml[i]].loc[data.Credit_Score == "Good"]
-        B = data[ml[i]].loc[data.Credit_Score == "Standard"]
-        C = data[ml[i]].loc[data.Credit_Score == "Poor"]
-
-
-        box = plt.boxplot([A,B,C],vert=False, patch_artist=True)
-        plt.xticks(ticks=[i for i in range(len(Unique))],labels=Unique)
-        plt.title(ml[i],loc='center')
-        plt.xlabel(["Good","Standard","Poor"])
-        plt.ylabel(ml[i])
-        
-        colors = ['lightgreen', 'yellow', 'red']
-        for patch, color in zip(box['boxes'], colors):
-            patch.set_facecolor(color)
-        plt.legend([box["boxes"][0], box["boxes"][1],box["boxes"][2]], ["Good","Standard","Poor"], loc='upper left')
-        plt.show()
+        fig = px.box(data,x=ml[i],color="Credit_Score", title=f"Credit Scores Based on {ml[i]}]",
+                     color_discrete_map={'Poor':'red', 'Standard':'yellow','Good':'green'})
+        fig.show()
 
 
     elif (type(data.iloc[2,i]) == np.float64):
